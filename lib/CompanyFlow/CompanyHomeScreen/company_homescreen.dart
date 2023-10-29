@@ -23,6 +23,7 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
   final DurationController = TextEditingController();
   final DepartureController = TextEditingController();
   final titleController = TextEditingController();
+  final CompanyNameController = TextEditingController();
   final auth = FirebaseAuth.instance;
   final reference = FirebaseDatabase.instance.ref('Tours');
   @override
@@ -199,6 +200,20 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                     const SizedBox(
                       height: 30,
                     ),
+                    TextFormField(
+                      controller: CompanyNameController,
+                      decoration: InputDecoration(
+                        label: const Text('Company Name'),
+                        prefixIcon: const Icon(Icons.place),
+                        hintText: 'Enter Company Name',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xff01e90ff),
@@ -251,6 +266,7 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                             'Category': category.toString(),
                             'Rating': randomRating,
                             'Title' : titleController.text,
+                            'Company': CompanyNameController.text,
                           }).then((value) => Utilities().show_Message('Your Tour has been Shared Successfully'));
                         },
                         child: Text(

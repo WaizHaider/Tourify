@@ -1,33 +1,59 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tourify/Profile/your_trips.dart';
+import 'package:tourify/Reviews/reviews.dart';
+import 'package:tourify/user_Auth_login_screens/SignIn.dart';
 
 import '../Payment/payment.dart';
-import '../components/custom_toast.dart';
 
 class TourDescriptionScreen extends StatelessWidget {
   final Map<String, dynamic> data;
 
   TourDescriptionScreen({required this.data});
-
+// Function to log out and navigate to the login screen
+  void logoutAndNavigateToLogin(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+    } catch (e) {
+      print("Error logging out: $e");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tour Description'),
+        title: Text("Payment"),
         elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.share),
             color: Colors.white,
             onPressed: () {
-              // Handle three dots button press here
+              // Handle share button press here
             },
           ),
-          IconButton(
-            icon: Icon(Icons.more_vert),
-            color: Colors.white,
-            onPressed: () {
-              // Handle three dots button press here
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'logout') {
+                logoutAndNavigateToLogin(context);
+                // Handle logout here
+              }else if(value == 'trips'){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => YourTrips()));
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                  value: 'trips',
+                  child: Text('Your Trips'),
+                ),
+                PopupMenuItem<String>(
+                  value: 'logout',
+                  child: Text('Logout'),
+                ),
+              ];
             },
           ),
         ],
@@ -75,34 +101,40 @@ class TourDescriptionScreen extends StatelessWidget {
                     top: MediaQuery.of(context).size.height * 0.49,
                     left: 50,
                     child: Text('Ratings: ${data['ratings'] ?? 0}', style:
-                    GoogleFonts.abel(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),)),
+                    GoogleFonts.abel(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),)),
                 Positioned(
                     top: MediaQuery.of(context).size.height * 0.47,
                     right: 50,
                     child: Text('Duration: ${data['duration'] ?? ''}', style:
                     GoogleFonts.abel(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey),)),
                 Positioned(
-                    top: MediaQuery.of(context).size.height * 0.52,
+                    top: MediaQuery.of(context).size.height * 0.49,
+                    right: 50,
+                    child: Text('Company: ${data['company'] ?? ''}', style:
+                    GoogleFonts.abel(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey),)),
+                Positioned(
+                    top: MediaQuery.of(context).size.height * 0.51,
                     left: 50,
                     child: Text('Departure: ${data['departure'] ?? ''}', style:
                     GoogleFonts.abel(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xff1034A6)),)),
+
                 Positioned(
                     top: MediaQuery.of(context).size.height * 0.545,
                     left: 50,
                     child: Text('Description: ${data['description'] ?? ''}', style:
                     GoogleFonts.abel(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),)),
                 Positioned(
-                    top: MediaQuery.of(context).size.height * 0.57,
+                    top: MediaQuery.of(context).size.height * 0.68,
                     right: 50,
                     child: Text('Price: PKR ${data['price'] ?? 0}', style:
                     GoogleFonts.abel(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xff1034A6)),)),
                 Positioned(
                     top: MediaQuery.of(context).size.height * 0.45,
-                    right: 50,
+                    right: 40,
                     child: Text('Date: ${data['date'] ?? ''}', style:
-                    GoogleFonts.abel(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xff1034A6)),)),
+                    GoogleFonts.abel(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xff1034A6)),)),
                 Positioned(
-                  top: MediaQuery.of(context).size.height * 0.64,
+                  top: MediaQuery.of(context).size.height * 0.72,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
@@ -121,6 +153,7 @@ class TourDescriptionScreen extends StatelessWidget {
                             duration: data['duration'] ?? '',
                             departure: data['departure'] ?? '',
                             price: data['price'] ?? 0,
+                            company: data['company'] ??'',
                           ),
                         ),
                       );
@@ -134,6 +167,18 @@ class TourDescriptionScreen extends StatelessWidget {
                     ),
                   )
                   ,),
+                Positioned(
+                    top: MediaQuery.of(context).size.height * 0.68,
+                    left: 40,
+                    child: GestureDetector(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ReviewsScreen()));
+                      },
+                      child: Text('See Reviews', style: GoogleFonts.abel(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                    ),),
               ],
             ),
           ],

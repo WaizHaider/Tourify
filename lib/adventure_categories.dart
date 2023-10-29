@@ -14,20 +14,29 @@ class AdventureCategory extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text("Payment"),
         elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.share),
             color: Colors.white,
             onPressed: () {
-              // Handle three dots button press here
+              // Handle share button press here
             },
           ),
-          IconButton(
-            icon: Icon(Icons.more_vert),
-            color: Colors.white,
-            onPressed: () {
-              // Handle three dots button press here
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'logout') {
+                // Handle logout here
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                  value: 'logout',
+                  child: Text('Logout'),
+                ),
+              ];
             },
           ),
         ],

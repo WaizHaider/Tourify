@@ -9,12 +9,11 @@ class AdventureCard extends StatelessWidget {
   final int ratings;
   final String duration;
   final String departure;
-  final String description;
   final String date;
   final double price;
   final String Category;
   const AdventureCard({
-  required this.imageUrl, required this.title, required this.ratings, required this.duration, required this.departure, required this.description, required this.price, required this.Category, required this.date
+  required this.imageUrl, required this.title, required this.ratings, required this.duration, required this.departure, required this.price, required this.Category, required this.date
   });
 
   @override
@@ -56,8 +55,6 @@ class AdventureCard extends StatelessWidget {
                     Text(duration,style: GoogleFonts.abel(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
                         SizedBox(height: 5,),
                         Text("Departure: "+departure,style: GoogleFonts.abel(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
-                        SizedBox(height: 5,),
-                        Text("Description: "+description,style: GoogleFonts.abel(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xff1034A6))),
                         SizedBox(height: 5,),
                         Text("Ratings: $ratings ",style: GoogleFonts.abel(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
                         SizedBox(height: 5,),

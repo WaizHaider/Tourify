@@ -11,17 +11,19 @@ class PaymentScreen extends StatelessWidget {
   final String duration;
   final String departure;
   final double price;
+  final String company;
 
   const PaymentScreen({
-
     required this.title,
     required this.duration,
     required this.departure,
     required this.price,
+    required this.company,
   });
 
   @override
   Widget build(BuildContext context) {
+    final newPrice = price*0.3;
     final databaseReference = FirebaseDatabase.instance.ref();
     return Scaffold(
       appBar: AppBar(
@@ -35,11 +37,19 @@ class PaymentScreen extends StatelessWidget {
               // Handle share button press here
             },
           ),
-          IconButton(
-            icon: Icon(Icons.more_vert),
-            color: Colors.white,
-            onPressed: () {
-              // Handle more options button press here
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'logout') {
+                // Handle logout here
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                  value: 'logout',
+                  child: Text('Logout'),
+                ),
+              ];
             },
           ),
         ],
@@ -106,11 +116,35 @@ class PaymentScreen extends StatelessWidget {
                 // Display other data here using similar Text widgets
                 Positioned(
                   top: MediaQuery.of(context).size.height * 0.45,
-                  right: 50,
+                  right: 30,
                   child: Text(
                     'Duration: $duration',
                     style: GoogleFonts.abel(
-                      fontSize: 15,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.47,
+                  right: 30,
+                  child: Text(
+                    'Company: $company',
+                    style: GoogleFonts.abel(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.45,
+                  right: 30,
+                  child: Text(
+                    'Duration: $duration',
+                    style: GoogleFonts.abel(
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey,
                     ),
@@ -132,7 +166,7 @@ class PaymentScreen extends StatelessWidget {
                   top: MediaQuery.of(context).size.height * 0.51,
                   left: 50,
                   child: Text(
-                    'Price: PKR $price',
+                    'Price: PKR $newPrice',
                     style: GoogleFonts.abel(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -141,7 +175,31 @@ class PaymentScreen extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: MediaQuery.of(context).size.height * 0.6,
+                  top: MediaQuery.of(context).size.height * 0.55,
+                  left: 50,
+                  child: Text(
+                    'Note: We will charge 30% of total amount for booking',
+                    style: GoogleFonts.abel(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.57,
+                  left: 50,
+                  child: Text(
+                    'and will charge remaining at the start of trip',
+                    style: GoogleFonts.abel(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.63,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
@@ -161,7 +219,10 @@ class PaymentScreen extends StatelessWidget {
                         'title': title, // Replace with the actual title
                         'duration': duration, // Replace with the actual duration
                         'departure': departure, // Replace with the actual departure
-                        'price': price, // Replace with the actual price
+                        'price': price,
+                        'status': 'Partially Paid',
+                        'company': company,// Replace with the actual price
+                        'id': userID,
                       };
 
                       // Get the current timestamp in seconds
@@ -170,9 +231,8 @@ class PaymentScreen extends StatelessWidget {
                       // Upload payment data to the database under the specified structure
                       if (userID != null) {
                         databaseReference
-                            .child('Payments')
-                            .child('$timestampInSeconds') // Use timestamp as a child
-                            .child(userID) // User ID as a child
+                            .child('Payments')// Use timestamp as a child
+                            .child('$timestampInSeconds')
                             .set(paymentData)
                             .then((_) {
                           // Successfully uploaded data
@@ -221,7 +281,7 @@ class PaymentScreen extends StatelessWidget {
       ),
     );
 
-    Overlay.of(context)?.insert(overlayEntry);
+    Overlay.of(context).insert(overlayEntry);
 
     Future.delayed(Duration(seconds: 3), () {
       overlayEntry.remove();

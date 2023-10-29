@@ -29,6 +29,7 @@ void main() async {
       'CompanyRegistration':(context) => const CompanyRegisteration (),
       'CompanySignInScreen':(context) => const CompanySignIn (),
       'CompanyHomeScreen':(context) => const CompanyHomeScreen (),
+      '/login':(context)=> const SignInScreen(),
 
     },
   ));

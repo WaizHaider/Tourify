@@ -129,7 +129,6 @@ class SightSeeing extends StatelessWidget {
                                             ratings: int.parse(adventureData['Rating']?.toString() ?? '0'),
                                             duration: adventureData['Duration']?.toString() ?? "",
                                             departure: adventureData['Departure']?.toString() ?? "",
-                                            description: adventureData['Discription']?.toString() ?? "",
                                             price: double.parse(adventureData['Budget']?.toString() ?? '0.0'),
                                             Category: adventureData['Category']?.toString() ?? "",
                                             date: adventureData['Date']?.toString() ?? "",
