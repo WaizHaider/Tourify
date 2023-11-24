@@ -18,7 +18,6 @@ class _ReligiousScreenState extends State<ReligiousScreen> {
   List<String> filterOptions = [
     "Low to High",
     "High to Low",
-    "New",
     // Add more filter options as needed
   ];
 
@@ -26,7 +25,7 @@ class _ReligiousScreenState extends State<ReligiousScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Payment"),
+        title: Text("Religious Tours" , style: GoogleFonts.abel(fontWeight: FontWeight.bold),),
         elevation: 0,
         actions: [
           IconButton(
@@ -196,7 +195,6 @@ class _ReligiousScreenState extends State<ReligiousScreen> {
                           child: AdventureCard(
                             imageUrl: tourData["imageUrl"],
                             title: tourData["title"],
-                            ratings: tourData["ratings"],
                             duration: tourData["duration"],
                             departure: tourData["departure"],
                             price: tourData["price"],

@@ -34,7 +34,7 @@ class _AdventurousScreenState extends State<AdventurousScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Payment"),
+        title: Text("Adventurous Tours", style: GoogleFonts.abel(fontWeight: FontWeight.bold),),
         elevation: 0,
         actions: [
           IconButton(
@@ -163,7 +163,6 @@ class _AdventurousScreenState extends State<AdventurousScreen> {
                   child: AdventureCard(
                     imageUrl: tourData["imageUrl"],
                     title: tourData["title"],
-                    ratings: tourData["ratings"],
                     duration: tourData["duration"],
                     departure: tourData["departure"],
                     price: tourData["price"],

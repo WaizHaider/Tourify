@@ -209,7 +209,7 @@ class AdventureCategory extends StatelessWidget {
                       SizedBox(height: 20,),
                       InkWell(
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => FamilyNFriends()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => FriendsNFamily()));
                           debugPrint("Han jani ho rha he2");
                         },
                         child: Container(

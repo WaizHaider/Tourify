@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../components/custom_toast.dart';
@@ -12,6 +11,7 @@ class PaymentScreen extends StatelessWidget {
   final String departure;
   final double price;
   final String company;
+  final String category;
 
   const PaymentScreen({
     required this.title,
@@ -19,6 +19,7 @@ class PaymentScreen extends StatelessWidget {
     required this.departure,
     required this.price,
     required this.company,
+    required this.category,
   });
 
   @override
@@ -221,7 +222,8 @@ class PaymentScreen extends StatelessWidget {
                         'departure': departure, // Replace with the actual departure
                         'price': price,
                         'status': 'Partially Paid',
-                        'company': company,// Replace with the actual price
+                        'company': company,
+                        'category': category,// Replace with the actual price
                         'id': userID,
                       };
 

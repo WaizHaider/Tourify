@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:tourify/CompanyFlow/Company_Login_Authentication/company_login.dart';
 import 'package:tourify/CompanyFlow/CompanyHomeScreen/company_homescreen.dart';
@@ -12,6 +13,7 @@ import 'package:tourify/CompanyFlow/Company_Login_Authentication/registeration.d
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessageBackgroundHandler);
   runApp(MaterialApp(
     theme: ThemeData(
       primaryColor: const Color(0xff1034A6),
@@ -33,4 +35,9 @@ void main() async {
 
     },
   ));
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessageBackgroundHandler(RemoteMessage message) async{
+  await Firebase.initializeApp();
 }

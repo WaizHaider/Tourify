@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tourify/Recommendation/recommendation_screen.dart';
+
+import '../History/trip.dart';
 
 class MainPanelDrawer extends StatelessWidget {
   MainPanelDrawer({super.key});
@@ -32,14 +35,25 @@ class MainPanelDrawer extends StatelessWidget {
                 'Share your Tours',
                 style: GoogleFonts.lato(fontSize: 20, color: Colors.blueGrey),
               ),
-              
             ),
             ListTile(
-              leading: const Icon(Icons.book_online),
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => YourTrips()));
+              },
+                leading: const Icon(Icons.book_online),
+                title: Text(
+                  'Your Bookings',
+                  style: GoogleFonts.lato(fontSize: 20, color: Colors.blueGrey),
+                )),
+            ListTile(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => RecommendationScreen()));
+              },
+              leading: const Icon(Icons.recommend_rounded),
               title: Text(
-                'Your bookings',
+                'Want Recommendations',
                 style: GoogleFonts.lato(fontSize: 20, color: Colors.blueGrey),
-              )
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.settings),
@@ -47,9 +61,10 @@ class MainPanelDrawer extends StatelessWidget {
                 'Account Settings',
                 style: GoogleFonts.lato(fontSize: 20, color: Colors.blueGrey),
               ),
-              
             ),
-            const SizedBox(height: 200,),
+            const SizedBox(
+              height: 200,
+            ),
             ListTile(
               leading: const Icon(Icons.logout),
               title: Text(
@@ -67,9 +82,7 @@ class MainPanelDrawer extends StatelessWidget {
                 'About Us',
                 style: GoogleFonts.lato(fontSize: 20, color: Colors.blueGrey),
               ),
-              onTap: () {
-                
-              },
+              onTap: () {},
             ),
           ],
         ));

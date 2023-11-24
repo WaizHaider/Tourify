@@ -1,16 +1,49 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tourify/Profile/your_trips.dart';
 import 'package:tourify/Reviews/reviews.dart';
 import 'package:tourify/user_Auth_login_screens/SignIn.dart';
 
+import '../History/trip.dart';
 import '../Payment/payment.dart';
 
 class TourDescriptionScreen extends StatelessWidget {
   final Map<String, dynamic> data;
-
   TourDescriptionScreen({required this.data});
+  Future<List<int>> fetchRatings() async {
+    try {
+      DataSnapshot snapshot =
+          (await FirebaseDatabase.instance.ref().child('Ratings').child(data['company'] ?? '').once()).snapshot;
+
+      List<int> ratingsList = [];
+
+      if (snapshot.value != null) {
+        Map<dynamic, dynamic> ratingsData =
+        (snapshot.value as Map<dynamic, dynamic>);
+        ratingsData.forEach((key, value) {
+          int ratingValue = value['rating'];
+          ratingsList.add(ratingValue);
+        });
+      }
+
+      return ratingsList;
+    } catch (e) {
+      print('Error fetching ratings: $e');
+      return [];
+    }
+  }
+
+
+
+  double calculateAverage(List<int> ratings) {
+    if (ratings.isEmpty) {
+      return 0.0; // Return 0 if there are no ratings
+    }
+
+    double sum = ratings.map((value) => value.toDouble()).reduce((value, element) => value + element);
+    return sum / ratings.length;
+  }
 // Function to log out and navigate to the login screen
   void logoutAndNavigateToLogin(BuildContext context) async {
     try {
@@ -24,7 +57,7 @@ class TourDescriptionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Payment"),
+        title: Text("Tour Description", style: GoogleFonts.abel(fontWeight: FontWeight.bold),),
         elevation: 0,
         actions: [
           IconButton(
@@ -100,8 +133,25 @@ class TourDescriptionScreen extends StatelessWidget {
                 Positioned(
                     top: MediaQuery.of(context).size.height * 0.49,
                     left: 50,
-                    child: Text('Ratings: ${data['ratings'] ?? 0}', style:
-                    GoogleFonts.abel(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),)),
+                    child: FutureBuilder<List<int>>(
+                      future: fetchRatings(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}',style:
+                          GoogleFonts.abel(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey),);
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Text('No ratings available.',style:
+                          GoogleFonts.abel(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey),);
+                        } else {
+                          double average = calculateAverage(snapshot.data!);
+                          return Text('Rating: ${average.toStringAsFixed(2)}',style:
+                          GoogleFonts.abel(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey),);
+                        }
+                      },
+                    ),
+                ),
                 Positioned(
                     top: MediaQuery.of(context).size.height * 0.47,
                     right: 50,
@@ -154,6 +204,7 @@ class TourDescriptionScreen extends StatelessWidget {
                             departure: data['departure'] ?? '',
                             price: data['price'] ?? 0,
                             company: data['company'] ??'',
+                            category: data['Category'] ??'',
                           ),
                         ),
                       );

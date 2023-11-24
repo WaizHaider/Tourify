@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tourify/MainPanel/Drawer.dart';
 import 'package:tourify/adventure_categories.dart';
+import 'package:tourify/notifications_services.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -12,10 +13,20 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  NotificationServices notificationServices = NotificationServices();
+
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit(context);
+    notificationServices.setupInteractMessages(context);
+    //notificationServices.isTokenRefresh();
+    notificationServices.getDeviceToken().then((value){
+      print('Device Token');
+      print(value);
+    });
   }
 
   @override
