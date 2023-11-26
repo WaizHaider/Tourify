@@ -10,6 +10,7 @@ class Approved extends StatefulWidget {
 class _ApprovedState extends State<Approved> {
   final CollectionReference Approved =
       FirebaseFirestore.instance.collection('ApprovedRequest');
+
 Future getData() async {
     QuerySnapshot querySnapshot = await Approved.get();
     if (querySnapshot.docs.isEmpty) {

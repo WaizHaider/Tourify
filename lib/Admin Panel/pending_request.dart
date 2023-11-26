@@ -25,6 +25,8 @@ class _PendingState extends State<Pending> {
     return querySnapshot.docs;
   }
 
+  bool isvisible = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,8 +56,13 @@ class _PendingState extends State<Pending> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               ElevatedButton(
-                                  onPressed: ()async {
-                                    await Approved.add(snapshot.data[index].data());
+                                  onPressed: () async {
+                                    setState(() {
+                                      isvisible = false;
+                                    });
+                                    await Approved.add(
+                                        snapshot.data[index].data());
+                                    
                                   },
                                   child: const Text('Accept')),
                               const SizedBox(

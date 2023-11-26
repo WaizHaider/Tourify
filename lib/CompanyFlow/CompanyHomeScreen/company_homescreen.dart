@@ -122,6 +122,26 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                               child: const HomeCard(
                                   imagetitle: 'assets/historical.jpeg',
                                   title: 'Historical')),
+                                 GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  category = 'SightSeeing';
+                                });
+                                  debugPrint(category.toString());
+                              },
+                              child: const HomeCard(
+                                  imagetitle: 'assets/sights.jpg',
+                                  title: 'SightSeing')),
+                                   GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  category = 'Family and freinds';
+                                });
+                                  debugPrint(category.toString());
+                              },
+                              child: const HomeCard(
+                                  imagetitle: 'assets/familyfriends.jpg',
+                                  title: 'Family and Friends')),
                         ],
                       ),
                     ),

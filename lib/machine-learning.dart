@@ -13,13 +13,14 @@ class _MyWidgetState extends State<MyWidget> {
   List<dynamic> dataList = [];
 
   Future<void> fetchData() async {
-    var apiUrl = Uri.parse(
-        'http://127.0.0.1:5000/recommend'); // Replace with your API endpoint
+    var apiUrl =
+        Uri.parse("http://127.0.0.1:5000/recommend"); // Replace with your API endpoint
 
     final response = await http.get(apiUrl);
 
     if (response.statusCode == 200) {
-      final List<dynamic> responseData = jsonDecode(response.body);
+      final List<dynamic> responseData =
+          jsonDecode(response.body) as List<dynamic>;
       setState(() {
         dataList = List<String>.from(responseData);
         debugPrint(responseData.toString());
