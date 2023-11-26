@@ -83,7 +83,30 @@ class HomeScreen extends StatelessWidget {
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
             )),
-        const SizedBox(
+        
+        
+            const SizedBox(
+          height: 20,
+        ),
+             ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                foregroundColor: const Color(0xff1E90FF),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
+                backgroundColor: Theme.of(context).primaryColor),
+            onPressed: () {
+              Navigator.pushNamed(context, 'AdminHome');
+            },
+            child: Text(
+              'Admin Login',
+              style: GoogleFonts.abel(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            )),
+            const SizedBox(
           height: 20,
         ),
         ElevatedButton.icon(
@@ -92,13 +115,15 @@ class HomeScreen extends StatelessWidget {
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(30))),
             ),
-            onPressed: () {},
+            onPressed: () {
+               Navigator.pushNamed(context, 'OfflineMaps');
+            },
             icon: const Icon(Icons.location_on),
             label: Text(
               'Offline Map',
               style:
                   GoogleFonts.abel(fontSize: 20, fontWeight: FontWeight.bold),
-            ))
+            )),
       ]),
     );
   }

@@ -120,6 +120,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     Navigator.pushNamed(context, "MainScreen"));
                           } on FirebaseAuthException catch (e) {
                             if (e.code == 'user-not-found') {
+                              SnackBar(content: const Text("User not found"));
                               ScaffoldMessenger.of(context)
                                   .hideCurrentSnackBar();
                               Utilities().show_Message("User not found");
@@ -127,7 +128,11 @@ class _SignInScreenState extends State<SignInScreen> {
                               ScaffoldMessenger.of(context)
                                   .hideCurrentSnackBar();
                               Utilities().show_Message("Wrong password");
+                            
                             }
+                             ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('user not found')),
+                          );
                           }
 
                           ScaffoldMessenger.of(context).showSnackBar(

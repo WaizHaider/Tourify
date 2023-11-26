@@ -31,14 +31,15 @@ class _CompanyRegisterationState extends State<CompanyRegisteration> {
   final auth = FirebaseAuth.instance;
 
   final fireStore = FirebaseFirestore.instance.collection('Company');
+  CollectionReference PendingCompanyRequest =
+      FirebaseFirestore.instance.collection('PendigRequest');
 
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset : false,
+      resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
-
         child: Padding(
-          padding:  EdgeInsets.symmetric(horizontal:20 ),
+          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Form(
               key: _formKey,
               child: Column(
@@ -130,8 +131,7 @@ class _CompanyRegisterationState extends State<CompanyRegisteration> {
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.lock),
                       border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(20))),
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
                       labelText: 'Password',
                       hintText: 'Enter Password',
                       labelStyle: TextStyle(
@@ -156,8 +156,7 @@ class _CompanyRegisterationState extends State<CompanyRegisteration> {
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.password),
                       border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(20))),
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
                       labelText: 'Confirm Password',
                       hintText:
                           'Please re-enter your password for confirmation',
@@ -176,11 +175,9 @@ class _CompanyRegisterationState extends State<CompanyRegisteration> {
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.location_on),
                       border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(20))),
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
                       labelText: 'Address',
-                      hintText:
-                          'Provide your address for personalized service',
+                      hintText: 'Provide your address for personalized service',
                       labelStyle: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -229,16 +226,22 @@ class _CompanyRegisterationState extends State<CompanyRegisteration> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20))),
                       onPressed: () async {
+                        await PendingCompanyRequest.add({
+                          'Company name': UserNameController.text,
+                          'Website': WebsiteController.text,
+                          'Email': EmailController.text,
+                          'Password': PasswordController.text,
+                          'Address': AddressController.text,
+                          'PhoneNumber': PhoneNumberController.text,
+                        });
                         if (_formKey.currentState!.validate()) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Processing Data')));
+                              const SnackBar(content: Text('Processing Data')));
                         }
                         try {
-                          String uid = DateTime.now()
-                              .microsecondsSinceEpoch
-                              .toString();
-        
+                          String uid =
+                              DateTime.now().microsecondsSinceEpoch.toString();
+
                           await auth
                               .createUserWithEmailAndPassword(
                                   email: EmailController.text,
@@ -284,12 +287,10 @@ class _CompanyRegisterationState extends State<CompanyRegisteration> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text("Already have an account?",
-                          style:
-                              TextStyle(color: Colors.black, fontSize: 15)),
+                          style: TextStyle(color: Colors.black, fontSize: 15)),
                       TextButton(
                           onPressed: () {
-                            Navigator.pushNamed(
-                                context, 'CompanySignInScreen');
+                            Navigator.pushNamed(context, 'CompanySignInScreen');
                           },
                           child: const Text(
                             "Login",
