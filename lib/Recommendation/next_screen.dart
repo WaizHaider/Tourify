@@ -52,31 +52,23 @@ class _NextScreenState extends State<NextScreen> {
           if (value is Map<String, dynamic>) {
             print("Checking data types...");
 
-            bool isCategoryMatch = value["Category"] == widget.category;
-            bool isDepartureMatch = value["Departure"] == widget.departure;
-            bool isTitleMatch = value["Title"] == widget.destination;
-            bool isDurationMatch = value["Duration"] == widget.duration;
-
-            int budget = int.parse(value["Budget"] ?? "0");
+            bool isCategoryMatch = value["Category"]?.toString() == widget.category.toString();
+            /*bool isDepartureMatch = value["Departure"]?.toString().trim().toLowerCase() == widget.departure.toLowerCase();
+            bool isTitleMatch = value["Title"]?.toString().trim().toLowerCase() == widget.destination.toLowerCase();
+            bool isDurationMatch = value["Duration"]?.toString().trim().toLowerCase() == widget.duration.toLowerCase();
+            int budget = int.parse(value["Budget"]?.toString() ?? "0");
             int priceRange = int.parse(widget.priceRange);
+            bool isBudgetMatch = budget <= priceRange;*/
+       //     bool isDateMatch = value["Date"]?.toString().trim().toLowerCase() == widget.selectedDate.toLowerCase();
 
-            bool isBudgetMatch = budget <= priceRange;
-            bool isDateMatch = value["Date"] == widget.selectedDate;
-
-            print("Is Category Match: $isCategoryMatch");
-            print("Is Departure Match: $isDepartureMatch");
-            print("Is Title Match: $isTitleMatch");
-            print("Is Duration Match: $isDurationMatch");
-            print("Budget: $budget, Price Range: $priceRange");
-            print("Is Budget Match: $isBudgetMatch");
-            print("Is Date Match: $isDateMatch");
-
-            bool isMatch = isCategoryMatch &&
+            print("Widget Category: ${widget.category}");
+            print("Widget Departure: ${widget.departure}");
+         //       isDateMatch;
+            bool isMatch = isCategoryMatch /*&&
                 isDepartureMatch &&
                 isTitleMatch &&
                 isDurationMatch &&
-                isBudgetMatch &&
-                isDateMatch;
+                isBudgetMatch*/;// &&
 
             print("Is Match: $isMatch");
 
