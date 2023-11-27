@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'next_screen.dart';
+
 class CustomizedOption extends StatefulWidget {
   const CustomizedOption({Key? key}) : super(key: key);
 
@@ -28,6 +29,9 @@ class _CustomizedOptionState extends State<CustomizedOption> {
   ];
   final selectedDateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  //these functions are useless
+
   String? validateCategory(String? value) {
     return value == null || value.isEmpty ? 'Category is required' : null;
   }
@@ -43,7 +47,6 @@ class _CustomizedOptionState extends State<CustomizedOption> {
   String? validatePrice(String? value) {
     return value == null || value.isEmpty ? 'Price is required' : null;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +67,8 @@ class _CustomizedOptionState extends State<CustomizedOption> {
             Center(
               child: Text(
                 'Customize Your Recommendation',
-                style: GoogleFonts.abel(fontWeight: FontWeight.bold, fontSize: 20),
+                style:
+                    GoogleFonts.abel(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
             SizedBox(height: 30),
@@ -86,7 +90,7 @@ class _CustomizedOptionState extends State<CustomizedOption> {
                     child: Text(category),
                   );
                 }).toList(),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Category Type',
                   border: OutlineInputBorder(),
                 ),
@@ -99,7 +103,7 @@ class _CustomizedOptionState extends State<CustomizedOption> {
                 keyboardType: TextInputType.text,
                 controller: departureController,
                 validator: (value) => value!.isEmpty ? 'Enter departure' : null,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.location_history),
                   labelText: 'Departure',
                   labelStyle: TextStyle(
@@ -114,7 +118,8 @@ class _CustomizedOptionState extends State<CustomizedOption> {
                   ),
                   errorStyle: TextStyle(color: Colors.redAccent),
                 ),
-                style: GoogleFonts.abel(color: Colors.black, fontWeight: FontWeight.bold),
+                style: GoogleFonts.abel(
+                    color: Colors.black, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(height: 20),
@@ -123,8 +128,9 @@ class _CustomizedOptionState extends State<CustomizedOption> {
               child: TextFormField(
                 keyboardType: TextInputType.text,
                 controller: destinationController,
-                validator: (value) => value!.isEmpty ? 'Enter destination' : null,
-                decoration: InputDecoration(
+                validator: (value) =>
+                    value!.isEmpty ? 'Enter destination' : null,
+                decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.location_city_rounded),
                   labelText: 'Destination',
                   labelStyle: TextStyle(
@@ -139,7 +145,8 @@ class _CustomizedOptionState extends State<CustomizedOption> {
                   ),
                   errorStyle: TextStyle(color: Colors.redAccent),
                 ),
-                style: GoogleFonts.abel(color: Colors.black, fontWeight: FontWeight.bold),
+                style: GoogleFonts.abel(
+                    color: Colors.black, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(height: 20),
@@ -149,7 +156,7 @@ class _CustomizedOptionState extends State<CustomizedOption> {
                 keyboardType: TextInputType.text,
                 controller: daysController,
                 validator: (value) => value!.isEmpty ? 'Enter Days' : null,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.timelapse_rounded),
                   labelText: 'Duration',
                   labelStyle: TextStyle(
@@ -164,7 +171,8 @@ class _CustomizedOptionState extends State<CustomizedOption> {
                   ),
                   errorStyle: TextStyle(color: Colors.redAccent),
                 ),
-                style: GoogleFonts.abel(color: Colors.black, fontWeight: FontWeight.bold),
+                style: GoogleFonts.abel(
+                    color: Colors.black, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(height: 20),
@@ -173,8 +181,9 @@ class _CustomizedOptionState extends State<CustomizedOption> {
               child: TextFormField(
                 keyboardType: TextInputType.number,
                 controller: priceController,
-                validator: (value) => value!.isEmpty ? 'Enter Price Range' : null,
-                decoration: InputDecoration(
+                validator: (value) =>
+                    value!.isEmpty ? 'Enter Price Range' : null,
+                decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.price_change_rounded),
                   labelText: 'Price',
                   labelStyle: TextStyle(
@@ -189,55 +198,48 @@ class _CustomizedOptionState extends State<CustomizedOption> {
                   ),
                   errorStyle: TextStyle(color: Colors.redAccent),
                 ),
-                style: GoogleFonts.abel(color: Colors.black, fontWeight: FontWeight.bold),
+                style: GoogleFonts.abel(
+                    color: Colors.black, fontWeight: FontWeight.bold),
               ),
             ),
             SizedBox(height: 20),
-            Container(
-              width: 330,
-              child: TextFormField(
-                enabled: false,
-                controller: selectedDateController,
-                decoration: InputDecoration(
-                  labelText: 'Selected Date',
-                  border: OutlineInputBorder(),
-                  errorStyle: TextStyle(color: Colors.redAccent),
-                ),
-                style: GoogleFonts.abel(color: Color(0xff1034A6), fontWeight: FontWeight.bold),
-              ),
-            ),
+            
             SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xff01e90ff),
                 elevation: 20,
                 shadowColor: Colors.blueAccent,
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
               onPressed: () async {
+
                 selectedDate = await showDatePicker(
                   context: context,
                   initialDate: initialDate!,
                   firstDate: DateTime(2021),
                   lastDate: DateTime(2025),
                 );
-                setState(() {});
+                debugPrint(selectedDate.toString());
               },
               child: Text(
                 'Choose Date',
-                style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
+                style:
+                    GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xff01e90ff),
                 elevation: 20,
                 shadowColor: Colors.blueAccent,
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -245,7 +247,8 @@ class _CustomizedOptionState extends State<CustomizedOption> {
               onPressed: navigateToNextScreen,
               child: Text(
                 'Next',
-                style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
+                style:
+                    GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -253,10 +256,17 @@ class _CustomizedOptionState extends State<CustomizedOption> {
       ),
     );
   }
+
   void navigateToNextScreen() {
     // Format the selected date as "dd-MM-yyyy"
-    var formattedDate = "${selectedDate?.day}-${selectedDate?.month}-${selectedDate?.year}";
-
+    var formattedDate =
+        "${selectedDate?.day}-${selectedDate?.month}-${selectedDate?.year}";
+    debugPrint(formattedDate);
+    debugPrint(selectedValue);
+    debugPrint(departureController.text);
+    debugPrint(destinationController.text);
+    debugPrint(daysController.text);
+    debugPrint(priceController.text);
     // TODO: Implement navigation to the next screen and pass the data
     Navigator.push(
       context,

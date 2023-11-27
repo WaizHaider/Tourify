@@ -26,7 +26,8 @@ class NextScreen extends StatefulWidget {
 }
 
 class _NextScreenState extends State<NextScreen> {
-  List<Map<String, dynamic>> matchingTours = [];
+  // List of matching tours should be or a single list
+  List matchingTours = [];
 
   @override
   void initState() {
@@ -40,6 +41,7 @@ class _NextScreenState extends State<NextScreen> {
     reference.child("Tours").child(widget.category).onValue.listen((event) {
       DataSnapshot snapshot = event.snapshot;
       Map<dynamic, dynamic>? values = snapshot.value as Map<dynamic, dynamic>?;
+      
 
       print("Fetching data...");
 
@@ -49,8 +51,7 @@ class _NextScreenState extends State<NextScreen> {
         values.forEach((key, value) {
           print("Checking data: $value");
 
-          if (value is Map<String, dynamic>) {
-            print("Checking data types...");
+          
 
             bool isCategoryMatch = value["Category"] == widget.category;
             bool isDepartureMatch = value["Departure"] == widget.departure;
@@ -63,32 +64,30 @@ class _NextScreenState extends State<NextScreen> {
             bool isBudgetMatch = budget <= priceRange;
             bool isDateMatch = value["Date"] == widget.selectedDate;
 
-            print("Is Category Match: $isCategoryMatch");
-            print("Is Departure Match: $isDepartureMatch");
-            print("Is Title Match: $isTitleMatch");
-            print("Is Duration Match: $isDurationMatch");
-            print("Budget: $budget, Price Range: $priceRange");
-            print("Is Budget Match: $isBudgetMatch");
-            print("Is Date Match: $isDateMatch");
+            debugPrint("Is Category Match: $isCategoryMatch");
+            debugPrint("Is Departure Match: $isDepartureMatch");
+            debugPrint("Is Title Match: $isTitleMatch");
+            debugPrint("Is Duration Match: $isDurationMatch");
+            debugPrint("Budget: $budget, Price Range: $priceRange");
+            debugPrint("Is Budget Match: $isBudgetMatch");
+            debugPrint("Is Date Match: $isDateMatch");
 
-            bool isMatch = isCategoryMatch &&
-                isDepartureMatch &&
-                isTitleMatch &&
-                isDurationMatch &&
-                isBudgetMatch &&
-                isDateMatch;
+            if (isCategoryMatch && isTitleMatch && isDepartureMatch==true) {
 
-            print("Is Match: $isMatch");
 
-            if (isMatch) {
-              // This is a match, add to the list
+              // This is a match, add to the list but see this list has nested structure
+
+              //PROBLEM YAHA HAI YAKIAN IDHAR SAR RHI HAI
+              
               setState(() {
-                matchingTours.add(value);
+                matchingTours.add(values);
               });
+              debugPrint("Match TOURS LIST: $matchingTours");
             } else {
               print("Does not match all conditions");
             }
-          }
+           
+          
         });
 
         if (matchingTours.isNotEmpty) {
@@ -100,14 +99,14 @@ class _NextScreenState extends State<NextScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("No Tours Available"),
-                content: Text("Sorry, no tours match your criteria."),
+                title: const Text("No Tours Available"),
+                content: const Text("Sorry, no tours match your criteria."),
                 actions: [
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text("OK"),
+                    child: const Text("OK"),
                   ),
                 ],
               );
@@ -127,13 +126,13 @@ class _NextScreenState extends State<NextScreen> {
           style: GoogleFonts.abel(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
-        backgroundColor: Color(0xff1034A6),
+        backgroundColor: const Color(0xff1034A6),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            for (var match in matchingTours.take(3))
+            for (Map match in matchingTours)
               AdventureCard(
                 imageUrl: "assets/adventure.jpg",
                 title: match["Title"] ?? "",
@@ -144,7 +143,7 @@ class _NextScreenState extends State<NextScreen> {
                 date: match["Date"] ?? "",
               ),
             if (matchingTours.isEmpty)
-              Text("No matching tours available"),
+              const Text("No matching tours available"),
           ],
         ),
       ),
