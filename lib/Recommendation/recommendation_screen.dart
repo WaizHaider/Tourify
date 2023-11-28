@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tourify/Recommendation/customize_option.dart';
+import 'package:tourify/Recommendation/historybase_recommendation.dart';
 
 class RecommendationScreen extends StatelessWidget {
   const RecommendationScreen({super.key});
@@ -61,22 +62,27 @@ class RecommendationScreen extends StatelessWidget {
                     ),),),
                 Positioned(
                   top: MediaQuery.sizeOf(context).height*0.4,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Color(0xff1034A6),
-                      borderRadius: BorderRadius.circular(20)
-                    ),
-                    height: 40,
-                    width: 180,
-                    child: Center(
-                      child: Text("History Base",
-                      style: GoogleFonts.abel(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),),
-                    ),
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> HistoryBase()));
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xff1034A6),
+                        borderRadius: BorderRadius.circular(20)
+                      ),
+                      height: 40,
+                      width: 180,
+                      child: Center(
+                        child: Text("History Base",
+                        style: GoogleFonts.abel(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),),
+                      ),
                 ),
+                  ),
                 ),
                 Positioned(
                   top: MediaQuery.sizeOf(context).height*0.48,

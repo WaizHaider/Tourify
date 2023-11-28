@@ -2,7 +2,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../Categories/tour_description.dart';
 import '../components/advanture_card.dart';
+import 'description.dart';
 
 class NextScreen extends StatefulWidget {
   final String category;
@@ -28,6 +30,7 @@ class NextScreen extends StatefulWidget {
 class _NextScreenState extends State<NextScreen> {
   // List of matching tours should be or a single list
   List matchingTours = [];
+  List<Map<String, dynamic>> tourData = [];
 
   @override
   void initState() {
@@ -35,13 +38,13 @@ class _NextScreenState extends State<NextScreen> {
     fetchData();
   }
 
-  void fetchData() {
+  /*void fetchData() {
     DatabaseReference reference = FirebaseDatabase.instance.ref();
 
     reference.child("Tours").child(widget.category).onValue.listen((event) {
       DataSnapshot snapshot = event.snapshot;
       Map<dynamic, dynamic>? values = snapshot.value as Map<dynamic, dynamic>?;
-      
+
 
       print("Fetching data...");
 
@@ -51,43 +54,41 @@ class _NextScreenState extends State<NextScreen> {
         values.forEach((key, value) {
           print("Checking data: $value");
 
-          
-
-            bool isCategoryMatch = value["Category"] == widget.category;
-            bool isDepartureMatch = value["Departure"] == widget.departure;
-            bool isTitleMatch = value["Title"] == widget.destination;
-            bool isDurationMatch = value["Duration"] == widget.duration;
-
-            int budget = int.parse(value["Budget"] ?? "0");
-            int priceRange = int.parse(widget.priceRange);
-
-            bool isBudgetMatch = budget <= priceRange;
-            bool isDateMatch = value["Date"] == widget.selectedDate;
-
-            debugPrint("Is Category Match: $isCategoryMatch");
-            debugPrint("Is Departure Match: $isDepartureMatch");
-            debugPrint("Is Title Match: $isTitleMatch");
-            debugPrint("Is Duration Match: $isDurationMatch");
-            debugPrint("Budget: $budget, Price Range: $priceRange");
-            debugPrint("Is Budget Match: $isBudgetMatch");
-            debugPrint("Is Date Match: $isDateMatch");
-
-            if (isCategoryMatch && isTitleMatch && isDepartureMatch==true) {
 
 
-              // This is a match, add to the list but see this list has nested structure
+          bool isCategoryMatch = value["Category"] == widget.category;
+          bool isDepartureMatch = value["Departure"] == widget.departure;
+          bool isTitleMatch = value["Title"] == widget.destination;
+          bool isDurationMatch = value["Duration"] == widget.duration;
 
-              //PROBLEM YAHA HAI YAKIAN IDHAR SAR RHI HAI
-              
-              setState(() {
-                matchingTours.add(values);
-              });
-              debugPrint("Match TOURS LIST: $matchingTours");
-            } else {
-              print("Does not match all conditions");
-            }
-           
-          
+          int budget = int.parse(value["Budget"] ?? "0");
+          int priceRange = int.parse(widget.priceRange);
+
+          bool isBudgetMatch = budget <= priceRange;
+          bool isDateMatch = value["Date"] == widget.selectedDate;
+
+          debugPrint("Is Category Match: $isCategoryMatch");
+          debugPrint("Is Departure Match: $isDepartureMatch");
+          debugPrint("Is Title Match: $isTitleMatch");
+          debugPrint("Is Duration Match: $isDurationMatch");
+          debugPrint("Budget: $budget, Price Range: $priceRange");
+          debugPrint("Is Budget Match: $isBudgetMatch");
+          debugPrint("Is Date Match: $isDateMatch");
+
+          if (isCategoryMatch && isTitleMatch && isDepartureMatch==true) {
+
+
+            // This is a match, add to the list but see this list has nested structure
+
+            //PROBLEM YAHA HAI YAKIAN IDHAR SAR RHI HAI
+
+            setState(() {
+              matchingTours.add(values);
+            });
+            debugPrint("Match TOURS LIST: $matchingTours");
+          } else {
+            print("Does not match all conditions");
+          }
         });
 
         if (matchingTours.isNotEmpty) {
@@ -115,6 +116,69 @@ class _NextScreenState extends State<NextScreen> {
         }
       }
     });
+  }*/
+
+  void fetchData() {
+    DatabaseReference reference = FirebaseDatabase.instance.ref();
+    reference.child("Tours").child(widget.category).onValue.listen((event) {
+      final data = event.snapshot.value;
+
+      print("Data $data");
+
+      if (data != null && data is Map) {
+        List<Map<String, dynamic>> tours = [];
+        print("Tour: $tours");
+
+        data.forEach((key, value) {
+          if (value is Map) {
+            // Add the key-value pair to the list
+
+            bool isCategoryMatch = value["Category"] == widget.category;
+            bool isDepartureMatch = value["Departure"] == widget.departure;
+            bool isTitleMatch = value["Title"] == widget.destination;
+            bool isDurationMatch = value["Duration"] == widget.duration;
+            int budget = int.parse(value["Budget"] ?? "0");
+            int priceRange = int.parse(widget.priceRange);
+            bool isBudgetMatch = budget <= priceRange;
+            debugPrint("Is Category Match: $isCategoryMatch");
+            debugPrint("Is Departure Match: $isDepartureMatch");
+            debugPrint("Is Title Match: $isTitleMatch");
+            debugPrint("Is Duration Match: $isDurationMatch");
+            if(isDepartureMatch && isCategoryMatch && isTitleMatch && isBudgetMatch){
+              tours.add({key: value});
+              print("++++++++++++++++++++++++++++++++++++++++++");
+
+            }
+
+
+
+          }
+        });
+
+
+        setState(() {
+          tourData = tours;
+        });
+
+        for(int i =0 ; i<tourData.length; i++)
+        for (Map tour in tourData[i].values) {
+          print("Tour Details:");
+          tour.forEach((key, value) {
+
+            print("$key: ${value.runtimeType}");
+          });
+        }
+        print("Tour data for category ${widget.category}: ${tourData[1].values}");
+
+
+
+
+
+
+      } else {
+        print("No tour data found for category ${widget.category}");
+      }
+    });
   }
 
   @override
@@ -128,25 +192,35 @@ class _NextScreenState extends State<NextScreen> {
         elevation: 0,
         backgroundColor: const Color(0xff1034A6),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for (Map match in matchingTours)
-              AdventureCard(
-                imageUrl: "assets/adventure.jpg",
-                title: match["Title"] ?? "",
-                duration: match["Duration"] ?? "",
-                departure: match["Departure"] ?? "",
-                price: match["Budget"] ?? 0.0,
-                Category: match["Category"] ?? "",
-                date: match["Date"] ?? "",
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          for (int i = 0; i < tourData.length; i++)
+            for (Map match in tourData[i].values)
+              GestureDetector(
+                onTap: () {
+                  print('$match');
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => DescriptionScreen(data: Map<String, dynamic>.from(match)),
+                    ),
+                  );
+                },
+                child: AdventureCard(
+                  imageUrl: "assets/adventure.jpg",
+                  title: match["Title"] ?? "",
+                  duration: match["Duration"] ?? "",
+                  departure: match["Departure"] ?? "",
+                  price: double.parse(match["Budget"]) ?? 0.0,
+                  Category: match["Category"] ?? "",
+                  date: match["Date"] ?? "",
+                ),
               ),
-            if (matchingTours.isEmpty)
-              const Text("No matching tours available"),
-          ],
-        ),
+          if (tourData.isEmpty)
+            const  Text("No matching tours available"),
+        ],
       ),
+
     );
   }
 }

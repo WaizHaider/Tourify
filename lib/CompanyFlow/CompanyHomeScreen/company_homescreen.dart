@@ -107,7 +107,7 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                                 setState(() {
                                   category = 'Religious';
                                 });
-                                 debugPrint(category.toString());
+                                debugPrint(category.toString());
                               },
                               child: const HomeCard(
                                 imagetitle: 'assets/religious.jpeg',
@@ -118,11 +118,31 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                                 setState(() {
                                   category = 'Historical';
                                 });
-                                  debugPrint(category.toString());
+                                debugPrint(category.toString());
                               },
                               child: const HomeCard(
                                   imagetitle: 'assets/historical.jpeg',
                                   title: 'Historical')),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  category = 'SightSeeing';
+                                });
+                                debugPrint(category.toString());
+                              },
+                              child: const HomeCard(
+                                  imagetitle: 'assets/sights.jpg',
+                                  title: 'SightSeing')),
+                          GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  category = 'Family and freinds';
+                                });
+                                debugPrint(category.toString());
+                              },
+                              child: const HomeCard(
+                                  imagetitle: 'assets/familyfriends.jpg',
+                                  title: 'Family and Friends')),
                         ],
                       ),
                     ),
@@ -256,7 +276,8 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                         onPressed: () async {
                           var random = Random();
                           var randomRating = random.nextInt(6);
-                          var formattedDate = "${selectedDate?.day}-${selectedDate?.month}-${selectedDate?.year}";
+                          var formattedDate =
+                              "${selectedDate?.day}-${selectedDate?.month}-${selectedDate?.year}";
                           await reference.child(category!).push().set({
                             'Discription': DiscriptionController.text,
                             'Budget': BudgetController.text,
@@ -265,9 +286,10 @@ class _CompanyHomeScreenState extends State<CompanyHomeScreen> {
                             'Date': formattedDate.toString(),
                             'Category': category.toString(),
                             'Rating': randomRating,
-                            'Title' : titleController.text,
+                            'Title': titleController.text,
                             'Company': CompanyNameController.text,
-                          }).then((value) => Utilities().show_Message('Your Tour has been Shared Successfully'));
+                          }).then((value) => Utilities().show_Message(
+                              'Your Tour has been Shared Successfully'));
                         },
                         child: Text(
                           'Submit',

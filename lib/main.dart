@@ -1,9 +1,15 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:tourify/Admin%20Panel/admin-registeration.dart';
+import 'package:tourify/Admin%20Panel/admin_panel.dart';
+import 'package:tourify/Admin%20Panel/admin_signIn.dart';
+import 'package:tourify/Admin%20Panel/approved.dart';
+import 'package:tourify/Admin%20Panel/pending_request.dart';
 import 'package:tourify/CompanyFlow/Company_Login_Authentication/company_login.dart';
 import 'package:tourify/CompanyFlow/CompanyHomeScreen/company_homescreen.dart';
 import 'package:tourify/HomeScreen.dart';
 import 'package:tourify/MainPanel/MainPanel.dart';
+import 'package:tourify/Recommendation/machine-learning.dart';
 import 'package:tourify/user_Auth_login_screens/SignIn.dart';
 import 'package:tourify/user_Auth_login_screens/SignUp.dart';
 import 'package:tourify/splashScreen.dart';
@@ -32,6 +38,12 @@ void main() async {
       'CompanySignInScreen':(context) => const CompanySignIn (),
       'CompanyHomeScreen':(context) => const CompanyHomeScreen (),
       '/login':(context)=> const SignInScreen(),
+      'AdminHome':(context) =>  const AdminHome (),  
+      'Pending':(context) =>  Pending (),
+      'Approved':(context) => const Approved (),
+      'OfflineMaps':(context) => const MyWidget (),
+      'AdminRegistration':(context) => const AdminRegisteration (),
+      'AdminSignIn':(context) => const AdminSignInScreen (),
 
     },
   ));
