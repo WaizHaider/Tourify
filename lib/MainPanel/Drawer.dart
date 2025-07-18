@@ -1,34 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tourify/CompanyFlow/Company_Login_Authentication/company_login.dart';
 import 'package:tourify/Recommendation/recommendation_screen.dart';
 
 import '../History/trip.dart';
 
 class MainPanelDrawer extends StatelessWidget {
   MainPanelDrawer({super.key});
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  void logoutAndNavigateToLogin(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => CompanySignIn()));
+    } catch (e) {
+      print("Error logging out: $e");
+    }
+  }
 
   @override
-  final auth = FirebaseAuth.instance;
-  final user = FirebaseAuth.instance.currentUser;
   Widget build(BuildContext context) {
+    // Get the current user
+    final user = FirebaseAuth.instance.currentUser;
+
     return Drawer(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-                accountName: Text(user!.displayName.toString()),
-                currentAccountPicture: const CircleAvatar(
-                  backgroundColor: Colors.black,
-                ),
-                accountEmail: Text(user!.email.toString())),
+              accountName: Text(user?.displayName ?? "User"),
+              currentAccountPicture: const CircleAvatar(
+                backgroundColor: Colors.black,
+              ),
+              accountEmail: Text(user?.email ?? ""),
+            ),
             const SizedBox(
               height: 20,
             ),
             ListTile(
               onTap: () {
-                Navigator.pushNamed(context, 'CompanyRegistration');
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CompanySignIn()));
               },
               leading: Icon(Icons.tour),
               title: Text(

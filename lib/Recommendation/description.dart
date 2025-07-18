@@ -118,8 +118,14 @@ class DescriptionScreen extends StatelessWidget {
                   width: MediaQuery.sizeOf(context).width,
                 ),
                 Positioned(
-                    top: 100,
-                    child: Image.asset(data['imageUrl'] ?? 'assets/adventure.jpg', height: MediaQuery.sizeOf(context).height * 0.3, width: MediaQuery.sizeOf(context).width * 0.7,fit: BoxFit.cover,)),
+                  top: 100,
+                  child: Image.network(
+                    data['ImageURL'] ?? 'https://example.com/default_image.jpg',
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    fit: BoxFit.cover,
+                  ),
+                  ),
                 Positioned(
                     top: MediaQuery.of(context).size.height * 0.435,
                     left: 50,
@@ -165,13 +171,18 @@ class DescriptionScreen extends StatelessWidget {
                 Positioned(
                     top: MediaQuery.of(context).size.height * 0.51,
                     left: 50,
-                    child: Text('Departure: ${data['Departure'] ?? ''}', style:
+                    child: Text('Contact: ${data['companyEmail'] ?? ''}', style:
+                    GoogleFonts.abel(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xff1034A6)),)),
+                Positioned(
+                    top: MediaQuery.of(context).size.height * 0.528,
+                    left: 50,
+                    child: Text('Departure: ${data['departure'] ?? ''}', style:
                     GoogleFonts.abel(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xff1034A6)),)),
 
                 Positioned(
-                    top: MediaQuery.of(context).size.height * 0.545,
+                    top: MediaQuery.of(context).size.height * 0.555,
                     left: 50,
-                    child: Text('Description: ${data['Discription'] ?? ''}', style:
+                    child: Text('Description: ${data['description'] ?? ''}', style:
                     GoogleFonts.abel(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),)),
                 Positioned(
                     top: MediaQuery.of(context).size.height * 0.68,

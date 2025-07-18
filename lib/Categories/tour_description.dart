@@ -6,6 +6,7 @@ import 'package:tourify/Reviews/reviews.dart';
 import 'package:tourify/user_Auth_login_screens/SignIn.dart';
 
 import '../History/trip.dart';
+import '../HomeScreen.dart';
 import '../Payment/payment.dart';
 
 class TourDescriptionScreen extends StatelessWidget {
@@ -48,7 +49,7 @@ class TourDescriptionScreen extends StatelessWidget {
   void logoutAndNavigateToLogin(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
     } catch (e) {
       print("Error logging out: $e");
     }
@@ -119,7 +120,13 @@ class TourDescriptionScreen extends StatelessWidget {
                 ),
                 Positioned(
                   top: 100,
-                    child: Image.asset(data['imageUrl'] ?? 'assets/adventure.jpg', height: MediaQuery.sizeOf(context).height * 0.3, width: MediaQuery.sizeOf(context).width * 0.7,fit: BoxFit.cover,)),
+                  child: Image.network(
+                    data['imageUrl'] ?? '', // Replace with your default image URL
+                    height: MediaQuery.sizeOf(context).height * 0.3,
+                    width: MediaQuery.sizeOf(context).width * 0.7,
+                    fit: BoxFit.cover,
+                  ),
+                ),
                 Positioned(
                   top: MediaQuery.of(context).size.height * 0.435,
                     left: 50,
@@ -165,11 +172,16 @@ class TourDescriptionScreen extends StatelessWidget {
                 Positioned(
                     top: MediaQuery.of(context).size.height * 0.51,
                     left: 50,
+                    child: Text('Contact: ${data['companyEmail'] ?? ''}', style:
+                    GoogleFonts.abel(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xff1034A6)),)),
+                Positioned(
+                    top: MediaQuery.of(context).size.height * 0.528,
+                    left: 50,
                     child: Text('Departure: ${data['departure'] ?? ''}', style:
                     GoogleFonts.abel(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xff1034A6)),)),
 
                 Positioned(
-                    top: MediaQuery.of(context).size.height * 0.545,
+                    top: MediaQuery.of(context).size.height * 0.555,
                     left: 50,
                     child: Text('Description: ${data['description'] ?? ''}', style:
                     GoogleFonts.abel(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),)),

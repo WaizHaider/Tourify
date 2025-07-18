@@ -150,6 +150,7 @@ class YourTrips extends StatelessWidget {
                             .equalTo(currentUserId),
                         itemBuilder: (BuildContext context, DataSnapshot snapshot,
                             Animation<double> animation, int index) {
+                          debugPrint("Data snapshot: ${snapshot.value}");
                           final title = snapshot.child('title').value.toString();
                           final status = snapshot.child('status').value.toString();
                           final price = snapshot.child('price').value.toString();
@@ -236,15 +237,15 @@ class YourTrips extends StatelessWidget {
                                               width: 85,
                                               height: 20,
                                               decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10),
-                                                color: Colors.grey.shade300
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  color: Colors.grey.shade300
                                               ),
                                               child: Padding(
                                                 padding: const EdgeInsets.only(left: 5.0),
                                                 child: Text(
                                                   "Rate the Tour",
                                                   style: GoogleFonts.abel(fontSize: 15, color: Color(0xff1034A6),
-                                                  fontWeight: FontWeight.bold),
+                                                      fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                             ),

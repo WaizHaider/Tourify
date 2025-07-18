@@ -192,33 +192,36 @@ class _NextScreenState extends State<NextScreen> {
         elevation: 0,
         backgroundColor: const Color(0xff1034A6),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          for (int i = 0; i < tourData.length; i++)
-            for (Map match in tourData[i].values)
-              GestureDetector(
-                onTap: () {
-                  print('$match');
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => DescriptionScreen(data: Map<String, dynamic>.from(match)),
-                    ),
-                  );
-                },
-                child: AdventureCard(
-                  imageUrl: "assets/adventure.jpg",
-                  title: match["Title"] ?? "",
-                  duration: match["Duration"] ?? "",
-                  departure: match["Departure"] ?? "",
-                  price: double.parse(match["Budget"]) ?? 0.0,
-                  Category: match["Category"] ?? "",
-                  date: match["Date"] ?? "",
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            for (int i = 0; i < tourData.length; i++)
+              for (Map match in tourData[i].values)
+                GestureDetector(
+                  onTap: () {
+                    print('$match');
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => DescriptionScreen(data: Map<String, dynamic>.from(match)),
+                      ),
+                    );
+                  },
+                  child: AdventureCard(
+                    imageUrl: match['ImageURL'] ?? '',
+                    title: match["Title"] ?? "",
+                    duration: match["Duration"] ?? "",
+                    departure: match["Departure"] ?? "",
+                    price: double.parse(match["Budget"]) ?? 0.0,
+                    Category: match["Category"] ?? "",
+                    date: match["Date"] ?? "",
+                    companyEmail: match["companyEmail"] ?? "",
+                  ),
                 ),
-              ),
-          if (tourData.isEmpty)
-            const Text("No matching tours available"),
-        ],
+            if (tourData.isEmpty)
+              const Text("No matching tours available"),
+          ],
+        ),
       ),
 
     );

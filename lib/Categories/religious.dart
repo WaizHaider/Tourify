@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tourify/Categories/tour_description.dart';
 import 'package:tourify/components/advanture_card.dart';
+
+import '../HomeScreen.dart';
 
 class ReligiousScreen extends StatefulWidget {
   const ReligiousScreen({super.key});
@@ -20,12 +23,26 @@ class _ReligiousScreenState extends State<ReligiousScreen> {
     "High to Low",
     // Add more filter options as needed
   ];
+  List<Map<String, dynamic>> tours = [];
+  @override
+  void initState() {
+    super.initState();
+    loadData(selectedFilter);
+  }
+  void logoutAndNavigateToLogin(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+    } catch (e) {
+      print("Error logging out: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Religious Tours" , style: GoogleFonts.abel(fontWeight: FontWeight.bold),),
+        title: Text("Religious Tours", style: GoogleFonts.abel(fontWeight: FontWeight.bold),),
         elevation: 0,
         actions: [
           IconButton(
@@ -102,12 +119,16 @@ class _ReligiousScreenState extends State<ReligiousScreen> {
                               ),
                               Container(
                                 height: 29,
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12),color: Colors.white),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                ),
                                 child: DropdownButton<String>(
                                   value: selectedFilter,
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       selectedFilter = newValue!;
+                                      loadData(selectedFilter);
                                     });
                                   },
                                   style: TextStyle(color: Colors.black), // Set the text color for the selected item
@@ -127,7 +148,6 @@ class _ReligiousScreenState extends State<ReligiousScreen> {
                                   }).toList(),
                                 ),
                               ),
-
                             ],
                           ),
                         ],
@@ -138,100 +158,110 @@ class _ReligiousScreenState extends State<ReligiousScreen> {
               ],
             ),
             SizedBox(height: 50),
-            StreamBuilder(
-              stream: FirebaseDatabase.instance
-                  .ref()
-                  .child('Tours')
-                  .child('Religious')
-                  .onValue,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  var data = snapshot.data!.snapshot.value;
-                  if (data != null && data is Map) {
-                    List<Map<String, dynamic>> tours = [];
-
-                    data.forEach((key, value) {
-                      if (value is Map) {
-                        var adventureData = value as Map<Object?, Object?>;
-                        String dateStr = adventureData['Date']?.toString() ?? "";
-
-                        DateTime tripDate = parseCustomDate(dateStr);
-                        DateTime currentDate = DateTime.now();
-
-                        if (tripDate.isAfter(currentDate) || tripDate.isAtSameMomentAs(currentDate)) {
-                          tours.add({
-                            "imageUrl": "assets/adventure.jpg",
-                            "title": adventureData['Title']?.toString() ?? "",
-                            "ratings": int.parse(adventureData['Rating']?.toString() ?? '0'),
-                            "duration": adventureData['Duration']?.toString() ?? "",
-                            "departure": adventureData['Departure']?.toString() ?? "",
-                            "description": adventureData['Discription']?.toString() ?? "",
-                            "price": double.parse(adventureData['Budget']?.toString() ?? '0.0'),
-                            "Category": adventureData['Category']?.toString() ?? "",
-                            "date": adventureData['Date']?.toString() ?? "",
-                          });
-                        }
-                      }
-                    });
-
-                    // Sort tours based on the selected filter
-                    if (selectedFilter == "Low to High") {
-                      tours.sort((a, b) => a["price"].compareTo(b["price"]));
-                    } else if (selectedFilter == "High to Low") {
-                      tours.sort((a, b) => b["price"].compareTo(a["price"]));
-                    }
-
-                    List<Widget> adventureCards = [];
-                    for (var tourData in tours) {
-                      adventureCards.add(
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => TourDescriptionScreen(data: tourData),
-                              ),
-                            );
-                          },
-                          child: AdventureCard(
-                            imageUrl: tourData["imageUrl"],
-                            title: tourData["title"],
-                            duration: tourData["duration"],
-                            departure: tourData["departure"],
-                            price: tourData["price"],
-                            Category: tourData["Category"],
-                            date: tourData["date"],
-                          ),
-                        ),
-                      );
-                    }
-
-                    return Column(
-                      children: adventureCards,
+            Column(
+              children: tours.map((tourData) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => TourDescriptionScreen(data: tourData),
+                      ),
                     );
-                  } else {
-                    return Text("No data available");
-                  }
-                } else if (snapshot.hasError) {
-                  return Text(snapshot.error.toString());
-                } else {
-                  return CircularProgressIndicator(
-                    color: Color(0xff1034A6),
-                  );
-                }
-              },
+                  },
+                  child: AdventureCard(
+                    imageUrl: tourData["imageUrl"],
+                    title: tourData["title"],
+                    duration: tourData["duration"],
+                    departure: tourData["departure"],
+                    price: tourData["price"],
+                    Category: tourData["Category"],
+                    date: tourData["date"],
+                    companyEmail: tourData["companyEmail"],
+                  ),
+                );
+              }).toList(),
             ),
           ],
         ),
       ),
     );
   }
+  void loadData(String filter) {
+    tours.clear();
+    final ref = FirebaseDatabase.instance.ref().child('Tours').child('Religious');
+    ref.onValue.listen((event) {
+      final data = event.snapshot.value;
+      if (data != null && data is Map) {
+        final currentDate = DateTime.now();
+
+        data.forEach((key, value) {
+          if (value is Map) {
+            final adventureData = value as Map<Object?, Object?>;
+
+            // Add debug prints to check for null values
+            print("AdventureData: $adventureData");
+
+            // Check if key fields are not null before using them
+            if (adventureData['Date'] != null &&
+                adventureData['Rating'] != null &&
+                adventureData['Budget'] != null &&
+                adventureData['ImageURL'] != null &&
+                adventureData['Title'] != null &&
+                adventureData['Duration'] != null &&
+                adventureData['Departure'] != null &&
+                adventureData['Discription'] != null &&
+                adventureData['Category'] != null &&
+                adventureData['Company'] != null) {
+              String dateStr = adventureData['Date'].toString();
+              DateTime tripDate = parseCustomDate(dateStr);
+
+              // Check if the trip date is today or in the future
+              if (tripDate.isAtSameMomentAs(currentDate) || tripDate.isAfter(currentDate)) {
+                tours.add({
+                  "imageUrl": adventureData['ImageURL'].toString(),
+                  "title": adventureData['Title'].toString(),
+                  "ratings": int.parse(adventureData['Rating']?.toString() ?? '0'),
+                  "duration": adventureData['Duration']?.toString() ?? "",
+                  "departure": adventureData['Departure']?.toString() ?? "",
+                  "description": adventureData['Discription']?.toString() ?? "",
+                  "price": double.parse(adventureData['Budget']?.toString() ?? '0.0'),
+                  "Category": adventureData['Category']?.toString() ?? "",
+                  "date": adventureData['Date']?.toString() ?? "",
+                  "company": adventureData['Company']?.toString() ?? "",
+                  'companyEmail': adventureData['CompanyEmail'?.toString()??""],
+                  // ... (rest of the fields)
+                });
+              }
+            } else {
+              // Add debug print to identify which field is null
+              print("Null field in adventureData: $adventureData");
+            }
+          }
+        });
+
+        // Sort tours based on the selected filter
+        if (filter == "Low to High") {
+          tours.sort((a, b) => a["price"].compareTo(b["price"]));
+        } else if (filter == "High to Low") {
+          tours.sort((a, b) => b["price"].compareTo(a["price"]));
+        }
+
+        setState(() {
+          print("Number of tours: ${tours.length}");
+        });
+      }
+    });
+  }
+
+
+
 
   DateTime parseCustomDate(String dateStr) {
-    List<String> parts = dateStr.split('-');
+    final parts = dateStr.split('-');
     if (parts.length == 3) {
-      int day = int.parse(parts[0]);
-      int month = int.parse(parts[1]);
-      int year = int.parse(parts[2]);
+      final day = int.parse(parts[0]);
+      final month = int.parse(parts[1]);
+      final year = int.parse(parts[2]);
       return DateTime(year, month, day);
     } else {
       return DateTime(2000, 1, 1);

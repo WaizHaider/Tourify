@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'next_screen.dart';
+
 class CustomizedOption extends StatefulWidget {
   const CustomizedOption({Key? key}) : super(key: key);
 
@@ -28,22 +29,6 @@ class _CustomizedOptionState extends State<CustomizedOption> {
   ];
   final selectedDateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  String? validateCategory(String? value) {
-    return value == null || value.isEmpty ? 'Category is required' : null;
-  }
-
-  String? validateLocation(String? value) {
-    return value == null || value.isEmpty ? 'Location is required' : null;
-  }
-
-  String? validateDuration(String? value) {
-    return value == null || value.isEmpty ? 'Duration is required' : null;
-  }
-
-  String? validatePrice(String? value) {
-    return value == null || value.isEmpty ? 'Price is required' : null;
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -220,10 +205,16 @@ class _CustomizedOptionState extends State<CustomizedOption> {
               onPressed: () async {
                 selectedDate = await showDatePicker(
                   context: context,
-                  initialDate: initialDate!,
+                  initialDate: selectedDate ?? DateTime.now(),
                   firstDate: DateTime(2021),
                   lastDate: DateTime(2025),
                 );
+
+                if (selectedDate != null) {
+                  selectedDateController.text =
+                  "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}";
+                }
+
                 setState(() {});
               },
               child: Text(
@@ -253,23 +244,29 @@ class _CustomizedOptionState extends State<CustomizedOption> {
       ),
     );
   }
-  void navigateToNextScreen() {
-    // Format the selected date as "dd-MM-yyyy"
-    var formattedDate = "${selectedDate?.day}-${selectedDate?.month}-${selectedDate?.year}";
 
-    // TODO: Implement navigation to the next screen and pass the data
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => NextScreen(
-          category: selectedValue,
-          departure: departureController.text,
-          destination: destinationController.text,
-          duration: daysController.text,
-          priceRange: priceController.text,
-          selectedDate: formattedDate,
+  void navigateToNextScreen() {
+    if (selectedDate != null) {
+      // Format the selected date as "dd-MM-yyyy"
+      var formattedDate =
+          "${selectedDate?.day}-${selectedDate?.month}-${selectedDate?.year}";
+
+      // TODO: Implement navigation to the next screen and pass the data
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NextScreen(
+            category: selectedValue,
+            departure: departureController.text,
+            destination: destinationController.text,
+            duration: daysController.text,
+            priceRange: priceController.text,
+            selectedDate: formattedDate,
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      Fluttertoast.showToast(msg: 'Please choose a date');
+    }
   }
 }

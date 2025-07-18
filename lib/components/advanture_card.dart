@@ -11,8 +11,9 @@ class AdventureCard extends StatelessWidget {
   final String date;
   final double price;
   final String Category;
+  final String companyEmail;
   const AdventureCard({
-  required this.imageUrl, required this.title, required this.duration, required this.departure, required this.price, required this.Category, required this.date
+  required this.imageUrl,required this.companyEmail , required this.title, required this.duration, required this.departure, required this.price, required this.Category, required this.date
   });
 
   @override
@@ -23,10 +24,10 @@ class AdventureCard extends StatelessWidget {
       width: 300,
       child: Stack(
         children: <Widget>[
-           SizedBox(
-             height: 250,
-             child: Card(
-               color: Colors.white,
+          SizedBox(
+            height: 250,
+            child: Card(
+              color: Colors.white,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -35,7 +36,7 @@ class AdventureCard extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage(imageUrl), // Corrected here
+                          image: NetworkImage(imageUrl ?? ''), // Handle null imageUrl
                           fit: BoxFit.cover,
                         ),
                       ),

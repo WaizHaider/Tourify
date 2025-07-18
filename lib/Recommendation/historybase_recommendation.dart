@@ -49,16 +49,17 @@ class _HistoryBaseState extends State<HistoryBase> {
 
       if (data != null && data is Map) {
         List<Map<String, dynamic>> userPayments = [];
+        Set<String> categories = Set();
 
         data.forEach((key, value) {
           if (value is Map && value['id'] == userID) {
-            // Access the 'category' value directly
             String category = value['category'];
             print("Category for user ID $userID: $category");
-            loadData(category);
-            print("++++++++++++++++++++++++++++++++++++++++++");
-            // If you need to store the entire payment details, you can still add it to the list
-            userPayments..add({key: value});
+            categories.add(category);
+
+            if (userPayments.isEmpty) {
+              userPayments.add({key: value});
+            }
           }
         });
 
@@ -67,6 +68,11 @@ class _HistoryBaseState extends State<HistoryBase> {
         });
 
         print("Payment data for user ID $userID: $userPayments");
+
+        // Load data for each category
+        categories.forEach((category) {
+          loadData(category);
+        });
       } else {
         print("No payment data found for user ID: $userID");
       }
@@ -76,42 +82,73 @@ class _HistoryBaseState extends State<HistoryBase> {
   }
 
   void loadData(String category) {
-    tours.clear();
-    final ref = FirebaseDatabase.instance.ref().child('Tours').child(category);
-    ref.onValue.listen((event) {
-      final data = event.snapshot.value;
-      if (data != null && data is Map) {
-        final currentDate = DateTime.now();
+    if (tours.isEmpty) {
+      tours.clear();
+      final ref = FirebaseDatabase.instance.ref().child('Tours').child(category);
+      ref.onValue.listen((event) {
+        final data = event.snapshot.value;
+        if (data != null && data is Map) {
+          final currentDate = DateTime.now();
+          List<Map<String, dynamic>> highestRatedTours = [];
 
-        data.forEach((key, value) {
-          if (value is Map) {
-            final adventureData = value as Map<Object?, Object?>;
-            String dateStr = adventureData['Date']?.toString() ?? "";
+          data.forEach((key, value) {
+            if (value is Map) {
+              final adventureData = value as Map<Object?, Object?>;
+              String dateStr = adventureData['Date']?.toString() ?? "";
 
-            DateTime tripDate = parseCustomDate(dateStr);
+              DateTime tripDate = parseCustomDate(dateStr);
 
-            // Check if the trip date is today or in the future
-            if (tripDate.isAtSameMomentAs(currentDate) || tripDate.isAfter(currentDate)) {
-              tours.add({
-                "imageUrl": "assets/adventure.jpg",
-                "title": adventureData['Title']?.toString() ?? "",
-                "ratings": int.parse(adventureData['Rating']?.toString() ?? '0'),
-                "duration": adventureData['Duration']?.toString() ?? "",
-                "departure": adventureData['Departure']?.toString() ?? "",
-                "description": adventureData['Discription']?.toString() ?? "",
-                "price": double.parse(adventureData['Budget']?.toString() ?? '0.0'),
-                "Category": adventureData['Category']?.toString() ?? "",
-                "date": adventureData['Date']?.toString() ?? "",
-                "company": adventureData['Company']?.toString() ?? "",
-              });
+              if (tripDate.isAtSameMomentAs(currentDate) || tripDate.isAfter(currentDate)) {
+                tours.add({
+                  "imageUrl": adventureData['ImageURL'].toString(),
+                  "title": adventureData['Title']?.toString() ?? "",
+                  "ratings": int.parse(adventureData['Rating']?.toString() ?? '0'),
+                  "duration": adventureData['Duration']?.toString() ?? "",
+                  "departure": adventureData['Departure']?.toString() ?? "",
+                  "description": adventureData['Discription']?.toString() ?? "",
+                  "price": double.parse(adventureData['Budget']?.toString() ?? '0.0'),
+                  "Category": adventureData['Category']?.toString() ?? "",
+                  "date": adventureData['Date']?.toString() ?? "",
+                  "company": adventureData['Company']?.toString() ?? "",
+                  "companyEmail": adventureData['CompanyEmail']?.toString() ?? "",
+                });
+
+                // Keep track of the highest-rated tours for each category
+                if (highestRatedTours.length < 3 ||
+                    int.parse(adventureData['Rating']?.toString() ?? '0') >
+                        (highestRatedTours.last['ratings'] as int)) {
+                  highestRatedTours.add({
+                    "imageUrl": adventureData['ImageURL'].toString(),
+                    "title": adventureData['Title']?.toString() ?? "",
+                    "ratings": int.parse(adventureData['Rating']?.toString() ?? '0'),
+                    "duration": adventureData['Duration']?.toString() ?? "",
+                    "departure": adventureData['Departure']?.toString() ?? "",
+                    "description": adventureData['Discription']?.toString() ?? "",
+                    "price": double.parse(adventureData['Budget']?.toString() ?? '0.0'),
+                    "Category": adventureData['Category']?.toString() ?? "",
+                    "date": adventureData['Date']?.toString() ?? "",
+                    "company": adventureData['Company']?.toString() ?? "",
+                    "companyEmail": adventureData['CompanyEmail']?.toString() ?? "",
+                  });
+
+                  // Sort the highest-rated tours by ratings in descending order
+                  highestRatedTours.sort((a, b) =>
+                      (b["ratings"] as int).compareTo(a["ratings"] as int));
+
+                  // Keep only the top 3 highest-rated tours for each category
+                  highestRatedTours = highestRatedTours.take(3).toList();
+                }
+              }
             }
+          });
 
-          }
-        });
-
-        setState(() {});
-      }
-    });
+          setState(() {
+            // Update tours with the highest-rated tours for each category
+            tours = [...highestRatedTours];
+          });
+        }
+      });
+    }
   }
 
   DateTime parseCustomDate(String dateStr) {
@@ -128,6 +165,9 @@ class _HistoryBaseState extends State<HistoryBase> {
 
   @override
   Widget build(BuildContext context) {
+    // Sorting is not needed here, as the data is already sorted during loadData
+    final top3Tours = tours;
+
     print("Building HistoryBase screen. Payment data: $paymentData");
     return Scaffold(
       appBar: AppBar(
@@ -137,7 +177,7 @@ class _HistoryBaseState extends State<HistoryBase> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: tours.map((tourData) {
+          children: top3Tours.map((tourData) {
             return GestureDetector(
               onTap: () {
                 Navigator.of(context).push(
@@ -154,6 +194,7 @@ class _HistoryBaseState extends State<HistoryBase> {
                 price: tourData["price"],
                 Category: tourData["Category"],
                 date: tourData["date"],
+                companyEmail: tourData["companyEmail"],
               ),
             );
           }).toList(),

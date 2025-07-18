@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tourify/Utilities/Utils.dart';
+import '../CompanyHomeScreen/company_homescreen.dart';
 
 class CompanySignIn extends StatefulWidget {
   const CompanySignIn({super.key});
@@ -11,12 +11,45 @@ class CompanySignIn extends StatefulWidget {
 }
 
 class _CompanySignInState extends State<CompanySignIn> {
-  @override
-  User? user = FirebaseAuth.instance.currentUser;
-  final auth = FirebaseAuth.instance;
+  final CompanyFirestore =
+  FirebaseFirestore.instance.collection('ApprovedRequest');
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  Future<void> _login() async {
+    try {
+      // Validate the form
+      if (!_formKey.currentState!.validate()) {
+        return;
+      }
+
+      String userEmail = emailController.text;
+      String userPassword = passwordController.text;
+
+      QuerySnapshot<Map<String, dynamic>> snapshot =
+      await CompanyFirestore.where('Email', isEqualTo: userEmail)
+          .where('Password', isEqualTo: userPassword)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        String currentUserEmail = snapshot.docs.first['Email'];
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CompanyHomeScreen(currentUserEmail: currentUserEmail),
+          ),
+        );
+      } else {
+        Utilities().show_Message('Invalid email or password');
+      }
+    } catch (e) {
+      Utilities().show_Message(e.toString());
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
@@ -37,10 +70,10 @@ class _CompanySignInState extends State<CompanySignIn> {
                 ),
                 Text(
                   "Sign In",
-                  style: GoogleFonts.lato(
-                      color: const Color(0xFF01e90ff),
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(
                   height: 100,
@@ -50,9 +83,7 @@ class _CompanySignInState extends State<CompanySignIn> {
                     controller: emailController,
                     decoration: const InputDecoration(
                       labelText: "Email",
-                      labelStyle:
-                          TextStyle(color: Color(0XFF455A64), fontSize: 20),
-                      hintText: "Enrer your email",
+                      hintText: "Enter your email",
                       prefixIcon: Icon(Icons.email),
                     ),
                     validator: (value) {
@@ -67,14 +98,12 @@ class _CompanySignInState extends State<CompanySignIn> {
                     obscureText: true,
                     decoration: const InputDecoration(
                       labelText: "Password",
-                      labelStyle:
-                          TextStyle(color: Color(0XFF455A64), fontSize: 20),
-                      hintText: "Enrer your password",
+                      hintText: "Enter your password",
                       prefixIcon: Icon(Icons.lock),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Please enter your email";
+                        return "Please enter your password";
                       }
                       return null;
                     },
@@ -82,63 +111,43 @@ class _CompanySignInState extends State<CompanySignIn> {
                 ]),
                 Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                   TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "HomeScreen");
-                      },
-                      child: const Text(
-                        "Forgot Password?",
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 19, 48, 62),
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold),
-                      ))
+                    onPressed: () {
+                      Navigator.pushNamed(context, "HomeScreen");
+                    },
+                    child: const Text(
+                      "Forgot Password?",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
                 ]),
                 const SizedBox(
                   height: 50,
                 ),
                 Center(
                   child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 100, vertical: 15),
-                        backgroundColor: const Color(0xFF01e90ff),
-                        foregroundColor: Colors.white,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                        ),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 100, vertical: 15),
+                      backgroundColor: const Color(0xFF01e90ff),
+                      foregroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          try {
-                            await auth
-                                .signInWithEmailAndPassword(
-                                    email: emailController.text.toString(),
-                                    password:
-                                        passwordController.text.toString())
-                                .then((value) =>
-                                    Navigator.pushNamed(context, "CompanyHomeScreen"));
-                          } on FirebaseAuthException catch (e) {
-                            if (e.code == 'user-not-found') {
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                              Utilities().show_Message("User not found");
-                            } else if (e.code == 'wrong-password') {
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                              Utilities().show_Message("Wrong password");
-                            }
-                          }
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Processing Data')),
-                          );
-                        }
-                      },
-                      child: Text("Login",
-                          style: GoogleFonts.abel(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold) //TextStyle
-                          )),
+                    ),
+                    onPressed: () async {
+                      await _login();
+                    },
+                    child: Text(
+                      "Login",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(
                   height: 100,
@@ -146,29 +155,32 @@ class _CompanySignInState extends State<CompanySignIn> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don't have an account?",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold)),
+                    const Text(
+                      "Don't have an account?",
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, "CompanyRegistration");
-                        },
-                        child: const Text(
-                          "Sign-Up",
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 19, 48, 62),
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold),
-                        ))
+                      onPressed: () {
+                        Navigator.pushNamed(context, "CompanyRegistration");
+                      },
+                      child: const Text(
+                        "Sign-Up",
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ],
-                )
+                ),
               ],
             ),
           ),
         ),
       ),
-    );;
+    );
   }
 }

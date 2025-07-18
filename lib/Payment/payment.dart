@@ -24,8 +24,8 @@ class PaymentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final newPrice = price*0.3;
-    final databaseReference = FirebaseDatabase.instance.ref();
+    final newPrice = price * 0.3;
+    final databaseReference = FirebaseDatabase.instance.reference();
     return Scaffold(
       appBar: AppBar(
         title: Text("Payment"),
@@ -210,44 +210,54 @@ class PaymentScreen extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
                     ),
-                    onPressed: () {
-                      // Get the current user's ID (if you're using Firebase Authentication)
+                    onPressed: () async {
                       User? user = FirebaseAuth.instance.currentUser;
-                      String? userID = user?.uid;
 
-                      // Define the payment data
+                      if (user == null) {
+                        // User is not authenticated, handle this case as needed
+                        print('User not authenticated');
+                        return;
+                      }
+
+                      String userID = user.uid;
+
                       Map<String, dynamic> paymentData = {
-                        'title': title, // Replace with the actual title
-                        'duration': duration, // Replace with the actual duration
-                        'departure': departure, // Replace with the actual departure
+                        'title': title,
+                        'duration': duration,
+                        'departure': departure,
                         'price': price,
                         'status': 'Partially Paid',
                         'company': company,
-                        'category': category,// Replace with the actual price
+                        'category': category,
                         'id': userID,
                       };
-
-                      // Get the current timestamp in seconds
+                      String companyName = company;
+                      debugPrint('$userID');
                       int timestampInSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
-                      // Upload payment data to the database under the specified structure
-                      if (userID != null) {
-                        databaseReference
-                            .child('Payments')// Use timestamp as a child
+                      try {
+                        await databaseReference
+                            .child('Payments')
                             .child('$timestampInSeconds')
-                            .set(paymentData)
-                            .then((_) {
-                          // Successfully uploaded data
-                          print('Payment data uploaded to Firebase');
-                          showCustomToast(context, "Your Trip is booked");
-                          Future.delayed(Duration(seconds: 3), () {
-                            showCustomToast(context, "Stripe is not available in Pakistan");
-                          });
-                        }).catchError((error) {
-                          // Handle errors, if any
-                          print('Error uploading payment data: $error');
-                          showCustomToast(context, "Error Uploading Payment Data: $error");
+                            .set(paymentData);
+                        print('Payment data uploaded to Payments node');
+                      } catch (error) {
+                        print('Error uploading payment data to Payments node: $error');
+                      }
+
+                      try {
+                        await databaseReference
+                            .child('$companyName')
+                            .child('$timestampInSeconds')
+                            .set(paymentData);
+                        print('Payment data uploaded to new node under company name');
+                        showCustomToast(context, "Your Trip is booked");
+                        Future.delayed(Duration(seconds: 3), () {
+                          showCustomToast(context, "Stripe is not available in Pakistan");
                         });
+                      } catch (error) {
+                        print('Error uploading payment data to new node under company name: $error');
+                        showCustomToast(context, "Error Uploading Payment Data: $error");
                       }
                     },
                     child: Text(
@@ -266,6 +276,7 @@ class PaymentScreen extends StatelessWidget {
       ),
     );
   }
+
   void showCustomToast(BuildContext context, String message) {
     OverlayEntry overlayEntry;
 

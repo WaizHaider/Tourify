@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tourify/Categories/tour_description.dart';
 import 'package:tourify/components/advanture_card.dart';
 import 'package:date_utils/date_utils.dart';
+
+import '../HomeScreen.dart';
 
 class AdventurousScreen extends StatefulWidget {
   const AdventurousScreen({Key? key});
@@ -29,9 +32,18 @@ class _AdventurousScreenState extends State<AdventurousScreen> {
     super.initState();
     loadData(selectedFilter);
   }
+  void logoutAndNavigateToLogin(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+    } catch (e) {
+      print("Error logging out: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("Building AdventurousScreen");
     return Scaffold(
       appBar: AppBar(
         title: Text("Adventurous Tours", style: GoogleFonts.abel(fontWeight: FontWeight.bold),),
@@ -152,6 +164,7 @@ class _AdventurousScreenState extends State<AdventurousScreen> {
             SizedBox(height: 50),
             Column(
               children: tours.map((tourData) {
+                print("AdventureData: $tourData");
                 return GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
@@ -161,13 +174,14 @@ class _AdventurousScreenState extends State<AdventurousScreen> {
                     );
                   },
                   child: AdventureCard(
-                    imageUrl: tourData["imageUrl"],
-                    title: tourData["title"],
-                    duration: tourData["duration"],
-                    departure: tourData["departure"],
-                    price: tourData["price"],
-                    Category: tourData["Category"],
-                    date: tourData["date"],
+                    imageUrl: tourData["imageUrl"] ?? '',
+                    title: tourData["title"] ?? '',
+                    duration: tourData["duration"] ?? '',
+                    departure: tourData["departure"] ?? '',
+                    price: tourData["price"] ?? 0.0,
+                    Category: tourData["Category"] ?? '',
+                    date: tourData["date"] ?? '',
+                    companyEmail: tourData["companyEmail"] ?? '',
                   ),
                 );
               }).toList(),
@@ -189,26 +203,45 @@ class _AdventurousScreenState extends State<AdventurousScreen> {
         data.forEach((key, value) {
           if (value is Map) {
             final adventureData = value as Map<Object?, Object?>;
-            String dateStr = adventureData['Date']?.toString() ?? "";
 
-            DateTime tripDate = parseCustomDate(dateStr);
+            // Add debug prints to check for null values
+            print("AdventureData: $adventureData");
 
-            // Check if the trip date is today or in the future
-            if (tripDate.isAtSameMomentAs(currentDate) || tripDate.isAfter(currentDate)) {
-              tours.add({
-                "imageUrl": "assets/adventure.jpg",
-                "title": adventureData['Title']?.toString() ?? "",
-                "ratings": int.parse(adventureData['Rating']?.toString() ?? '0'),
-                "duration": adventureData['Duration']?.toString() ?? "",
-                "departure": adventureData['Departure']?.toString() ?? "",
-                "description": adventureData['Discription']?.toString() ?? "",
-                "price": double.parse(adventureData['Budget']?.toString() ?? '0.0'),
-                "Category": adventureData['Category']?.toString() ?? "",
-                "date": adventureData['Date']?.toString() ?? "",
-                "company": adventureData['Company']?.toString() ?? "",
-              });
+            // Check if key fields are not null before using them
+            if (adventureData['Date'] != null &&
+                adventureData['Rating'] != null &&
+                adventureData['Budget'] != null &&
+                adventureData['ImageURL'] != null &&
+                adventureData['Title'] != null &&
+                adventureData['Duration'] != null &&
+                adventureData['Departure'] != null &&
+                adventureData['Discription'] != null &&
+                adventureData['Category'] != null &&
+                adventureData['Company'] != null) {
+              String dateStr = adventureData['Date'].toString();
+              DateTime tripDate = parseCustomDate(dateStr);
+
+              // Check if the trip date is today or in the future
+              if (tripDate.isAtSameMomentAs(currentDate) || tripDate.isAfter(currentDate)) {
+                tours.add({
+                  "imageUrl": adventureData['ImageURL'].toString(),
+                  "title": adventureData['Title'].toString(),
+                  "ratings": int.parse(adventureData['Rating']?.toString() ?? '0'),
+                  "duration": adventureData['Duration']?.toString() ?? "",
+                  "departure": adventureData['Departure']?.toString() ?? "",
+                  "description": adventureData['Discription']?.toString() ?? "",
+                  "price": double.parse(adventureData['Budget']?.toString() ?? '0.0'),
+                  "Category": adventureData['Category']?.toString() ?? "",
+                  "date": adventureData['Date']?.toString() ?? "",
+                  "company": adventureData['Company']?.toString() ?? "",
+                  'companyEmail': adventureData['CompanyEmail'?.toString()??""],
+                  // ... (rest of the fields)
+                });
+              }
+            } else {
+              // Add debug print to identify which field is null
+              print("Null field in adventureData: $adventureData");
             }
-
           }
         });
 
@@ -219,10 +252,15 @@ class _AdventurousScreenState extends State<AdventurousScreen> {
           tours.sort((a, b) => b["price"].compareTo(a["price"]));
         }
 
-        setState(() {});
+        setState(() {
+          print("Number of tours: ${tours.length}");
+        });
       }
     });
   }
+
+
+
 
   DateTime parseCustomDate(String dateStr) {
     final parts = dateStr.split('-');
